@@ -2,6 +2,8 @@ import argparse
 import json
 import os
 from datetime import datetime
+import csv
+
 
 DATA_FILE = 'memo.json'
 
@@ -50,6 +52,45 @@ def search_memos(keyword):
             found = True
     if not found:
         print("❌ 没有找到相关备忘录")
+        
+        
+import os
+
+def export_memos(format="txt"):
+    data = load_data()
+    if not data:
+        print("❌ 没有备忘录可导出")
+        return
+
+    os.makedirs("exports", exist_ok=True)
+
+    # 自动生成文件名：memos_2024-04-13.txt / .md / .csv
+    date_str = datetime.now().strftime('%Y-%m-%d')
+    filename = f"exports/memos_{date_str}.{format}"
+
+    if format == "txt":
+        with open(filename, "w", encoding="utf-8") as f:
+            for i, memo in enumerate(data, 1):
+                f.write(f"{i}. {memo['content']} ({memo['time']})\n")
+        print(f"✅ 已导出为 TXT：{filename}")
+
+    elif format == "md":
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write("# 我的备忘录\n\n")
+            for i, memo in enumerate(data, 1):
+                f.write(f"- **{i}. {memo['content']}**  \n  ⏰ {memo['time']}\n")
+        print(f"✅ 已导出为 Markdown：{filename}")
+
+    elif format == "csv":
+        with open(filename, "w", newline='', encoding="utf-8") as f:
+            writer = csv.writer(f)
+            writer.writerow(["编号", "内容", "时间"])
+            for i, memo in enumerate(data, 1):
+                writer.writerow([i, memo['content'], memo['time']])
+        print(f"✅ 已导出为 CSV：{filename}")
+
+    else:
+        print("❌ 不支持的导出格式（支持 txt / md / csv）")
 
 def main():
     parser = argparse.ArgumentParser(description="命令行备忘录工具")
@@ -65,6 +106,9 @@ def main():
     
     search_parser = subparsers.add_parser('search', help='搜索备忘录')
     search_parser.add_argument('keyword', type=str, help='关键词')
+    
+    export_parser = subparsers.add_parser('export', help='导出备忘录')
+    export_parser.add_argument('format', type=str, help='导出格式：txt 或 md')
 
     args = parser.parse_args()
 
@@ -76,6 +120,8 @@ def main():
         delete_memo(args.index)
     elif args.command == 'search':
         search_memos(args.keyword)
+    elif args.command == 'export':
+        export_memos(args.format)
     else:
         parser.print_help()
 
