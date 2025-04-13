@@ -3,7 +3,10 @@ import json
 import os
 from datetime import datetime
 import csv
-
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 
 DATA_FILE = 'memo.json'
 
@@ -88,9 +91,38 @@ def export_memos(format="txt"):
             for i, memo in enumerate(data, 1):
                 writer.writerow([i, memo['content'], memo['time']])
         print(f"✅ 已导出为 CSV：{filename}")
-
+    elif format == "pdf":
+        export_pdf(data, filename)
     else:
         print("❌ 不支持的导出格式（支持 txt / md / csv）")
+        
+        
+def export_pdf(data, filename):
+    # 1. 注册中文字体（假设使用的是 simsun.ttf）
+    font_path = os.path.join("fonts", "MSYH.TTC")  # 你可以换成 msyh.ttc
+    pdfmetrics.registerFont(TTFont('MSYH', font_path))
+
+    # 2. 创建 PDF 文档
+    doc = SimpleDocTemplate(filename)
+    styles = getSampleStyleSheet()
+
+    # 3. 自定义段落样式，使用中文字体
+    cn_style = ParagraphStyle(
+        name='Chinese',
+        fontName='MSYH',
+        fontSize=12,
+        leading=20
+    )
+
+    story = [Paragraph("我的备忘录", cn_style), Spacer(1, 12)]
+
+    for i, memo in enumerate(data, 1):
+        content = f"<b>{i}. {memo['content']}</b><br/>时间：{memo['time']}"
+        story.append(Paragraph(content, cn_style))
+        story.append(Spacer(1, 12))
+
+    doc.build(story)
+    print(f"✅ 已导出为 PDF：{filename}")
 
 def main():
     parser = argparse.ArgumentParser(description="命令行备忘录工具")
@@ -108,7 +140,7 @@ def main():
     search_parser.add_argument('keyword', type=str, help='关键词')
     
     export_parser = subparsers.add_parser('export', help='导出备忘录')
-    export_parser.add_argument('format', type=str, help='导出格式：txt 或 md')
+    export_parser.add_argument('format', type=str, help='导出格式：txt ,csv,pdf或 md')
 
     args = parser.parse_args()
 
