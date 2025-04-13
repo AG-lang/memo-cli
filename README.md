@@ -12,6 +12,8 @@ argparse 命令行解析
 reportlab PDF 导出
 csv 模块
 系统任务调度（可选）
+
+```
 📦 功能概览
 功能 命令示例
 ✅ 添加备忘录 python memo.py add "学习 Git"
@@ -23,11 +25,14 @@ csv 模块
 ✅ 导出 CSV python memo.py export csv
 ✅ 导出 PDF（支持中文） python memo.py export pdf
 ✅ 自动备份脚本 python auto_backup.py
+```
+
 🛠️ 安装依赖
 
 pip install reportlab
 📁 项目结构
 
+```
 memo-cli/
 ├── memo.py # 主程序
 ├── auto_backup.py # 自动备份脚本（可选）
@@ -38,6 +43,8 @@ memo-cli/
 │ └── MSYH.TTC # 微软雅黑（支持 PDF 中文）
 ├── .gitignore
 └── README.md
+```
+
 📄 字体说明（PDF 中文支持）
 为了支持 PDF 中文导出，你需要准备一个中文字体文件（如：微软雅黑）：
 
