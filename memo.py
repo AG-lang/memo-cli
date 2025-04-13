@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+from datetime import datetime
 
 DATA_FILE = 'memo.json'
 
@@ -16,7 +17,11 @@ def save_data(data):
 
 def add_memo(content):
     data = load_data()
-    data.append(content)
+    memo = {
+        "content": content,
+        "time": datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    }
+    data.append(memo)
     save_data(data)
     print("✅ 添加成功")
 
@@ -25,7 +30,7 @@ def list_memos():
     if not data:
         print("暂无备忘录")
     for i, memo in enumerate(data, 1):
-        print(f"{i}. {memo}")
+        print(f"{i}. {memo['content']}  📅 {memo['time']}")
 
 def delete_memo(index):
     data = load_data()
@@ -35,6 +40,16 @@ def delete_memo(index):
         print(f"🗑️ 已删除：{removed}")
     else:
         print("❌ 无效编号")
+        
+def search_memos(keyword):
+    data = load_data()
+    found = False
+    for i, memo in enumerate(data, 1):
+        if keyword.lower() in memo['content'].lower():
+            print(f"{i}. {memo['content']}  📅 {memo['time']}")
+            found = True
+    if not found:
+        print("❌ 没有找到相关备忘录")
 
 def main():
     parser = argparse.ArgumentParser(description="命令行备忘录工具")
@@ -47,6 +62,9 @@ def main():
 
     del_parser = subparsers.add_parser('delete', help='删除备忘录')
     del_parser.add_argument('index', type=int, help='要删除的编号')
+    
+    search_parser = subparsers.add_parser('search', help='搜索备忘录')
+    search_parser.add_argument('keyword', type=str, help='关键词')
 
     args = parser.parse_args()
 
@@ -56,6 +74,8 @@ def main():
         list_memos()
     elif args.command == 'delete':
         delete_memo(args.index)
+    elif args.command == 'search':
+        search_memos(args.keyword)
     else:
         parser.print_help()
 
