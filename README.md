@@ -45,6 +45,7 @@ memo-cli/
 └── README.md
 ```
 
+```
 📄 字体说明（PDF 中文支持）
 为了支持 PDF 中文导出，你需要准备一个中文字体文件（如：微软雅黑）：
 
@@ -53,6 +54,9 @@ memo-cli/
 
 from reportlab.pdfbase.ttfonts import TTFont
 pdfmetrics.registerFont(TTFont("MSYH", "fonts/MSYH.TTC"))
+```
+
+```
 🕒 自动备份功能（可选）
 你可以使用 auto_backup.py 实现每天自动导出 PDF 备份：
 
@@ -60,6 +64,8 @@ python auto_backup.py
 配合系统任务计划使用：
 Windows：使用“任务计划程序”设置每天定时执行
 Linux/macOS：使用 crontab
+```
+
 🧪 示例演示
 
 # 添加备忘录
